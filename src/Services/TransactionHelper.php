@@ -49,7 +49,7 @@ class TransactionHelper
         foreach ($this->frais as $key => $value) {
 
             [$minNumber, $maxNumber] = explode("-", $key);
-            if ($solde >= $minNumber && $solde <= $maxNumber) {
+            if ($solde >= $minNumber && $solde < $maxNumber) {
                 return $value;
             }
         }
@@ -69,9 +69,9 @@ class TransactionHelper
         // ∙ ​ 20% pour l’opérateur qui a effectué le retrait
         $parts['partEtat'] = ($frais * 40) / 100;
         $parts['transFertArgent'] = ($frais * 30) / 100;
-        $restant = ($frais * 30) / 100;
-        $parts['operateurDepot'] = ($restant * 10) / 100;
-        $parts['operateurRetrait'] = ($restant * 20) / 100;
+        // $restant = ($frais * 30) / 100;
+        $parts['operateurDepot'] = ($frais * 10) / 100;
+        $parts['operateurRetrait'] = ($frais * 20) / 100;
 
         return $parts;
 

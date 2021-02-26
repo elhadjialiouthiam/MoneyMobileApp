@@ -1,32 +1,29 @@
 <?php
 namespace App\DataPersister;
 
-use App\Entity\Comptes;
+use App\Entity\CompteUserAgence;
 use App\Services\UtilsHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class ComptesDataPersister implements ContextAwareDataPersisterInterface
+class CompteUserAgenceDataPersister implements ContextAwareDataPersisterInterface
 {
     private $_entityManager;
     private $_utilsHelper;
-    private $_passwordEncoder;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         UtilsHelper $utilsHelper,
-        UserPasswordEncoderInterface $passwordEncoder
     ) {
         $this->_entityManager = $entityManager;
         $this->_utilsHelper = $utilsHelper;
-        $this->_passwordEncoder = $passwordEncoder;
     }
 
     public function supports($data, array $context = []): bool
     {
 
-        return $data instanceof Comptes;
+        return $data instanceof CompteUserAgence;
     }
 
     public function persist($data, array $context = [])

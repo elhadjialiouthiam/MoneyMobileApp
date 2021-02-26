@@ -2,10 +2,14 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\TransactionRepository;
+use App\Entity\Clients;
+use App\Entity\Comptes;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\TransactionRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
  * @ApiResource(
@@ -17,6 +21,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *          "DELETE"
  *      }
  * )
+ * @ApiFilter(
+ * BooleanFilter::class, properties={"isDepot"}
+ * )
  * @ORM\Entity(repositoryClass=TransactionRepository::class)
  */
 class Transaction
@@ -27,7 +34,7 @@ class Transaction
      * @ORM\Column(type="integer")
      *
      *  @Groups({
-     *      "trans:read"
+     *      "trans:read", "compte:read","compteuser:read","useragence:read",
      * })
      */
     private $id;
@@ -36,7 +43,7 @@ class Transaction
      * @ORM\Column(type="string", length=255)
      *
      * @Groups({
-     *      "trans:read", "trans:write",
+     *      "trans:read", "trans:write","compte:read","compteuser:read","useragence:read",
      * })
      */
     private $code;
@@ -45,7 +52,7 @@ class Transaction
      * @ORM\Column(type="float")
      *
      * @Groups({
-     *      "trans:read", "trans:write",
+     *      "trans:read", "trans:write","compte:read","compteuser:read","useragence:read",
      * })
      */
     private $montant;
@@ -53,7 +60,9 @@ class Transaction
     /**
      * @ORM\Column(type="datetime")
      *
-     * @Groups({"trans:read"})
+     * @Groups({
+     *      "trans:read", "trans:write","compte:read","compteuser:read","useragence:read",
+     * })
      */
     private $createdAt;
 
@@ -61,7 +70,7 @@ class Transaction
      * @ORM\Column(type="boolean")
      *
      * @Groups({
-     *      "trans:read", "trans:write",
+     *      "trans:read", "trans:write","compte:read","compteuser:read","useragence:read",
      * })
      */
     private $isDepot;
@@ -69,7 +78,7 @@ class Transaction
     /**
      * @ORM\Column(type="float", nullable=true)
      *
-     * @Groups({
+     *@Groups({
      *      "trans:read", "trans:write",
      * })
      */
@@ -94,19 +103,11 @@ class Transaction
     private $partAgenceDepot;
 
     /**
-     * @ORM\OneToOne(targetEntity=Clients::class, cascade={"persist", "remove"})
-     *
-     *
-     * @Groups({
-     *      "trans:read", "trans:write",
-     * })
-     */
-    private $client;
-
-    /**
      * @ORM\Column(type="boolean")
      *
-     * @Groups({"trans:read"})
+     * @Groups({
+     *      "trans:read", "trans:write","compte:read","compteuser:read"
+     * })
      */
     private $statut;
 
@@ -115,16 +116,35 @@ class Transaction
     /**
      * @ORM\ManyToOne(targetEntity=Comptes::class, inversedBy="transactions", cascade={"persist"})
      *
-     * @Groups({
-     *      "trans:read", "trans:write",
+     *@Groups({
+     *      "trans:read", "trans:write","compte:read"
      * })
      */
     private $compte;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({
+     *      "trans:read","compte:read","compteuser:read","useragence:read",
+     * })
      */
     private $frais;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Clients::class, cascade={"persist", "remove"})
+     * @Groups({
+     *      "trans:read", "trans:write","compte:read"
+     * })
+     */
+    private $client;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=CompteUserAgence::class, inversedBy="transaction")
+     * @Groups({
+     *      "trans:read", "trans:write"
+     * })
+     */
+    private $compteUserAgence;
 
     public function __construct()
     {
@@ -221,18 +241,6 @@ class Transaction
         return $this;
     }
 
-    public function getClient(): ?Clients
-    {
-        return $this->client;
-    }
-
-    public function setClient(?Clients $client): self
-    {
-        $this->client = $client;
-
-        return $this;
-    }
-
     public function getStatut(): ?bool
     {
         return $this->statut;
@@ -277,6 +285,30 @@ class Transaction
     public function setFrais(int $frais): self
     {
         $this->frais = $frais;
+
+        return $this;
+    }
+
+    public function getClient(): ?Clients
+    {
+        return $this->client;
+    }
+
+    public function setClient(?Clients $client): self
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    public function getCompteUserAgence(): ?CompteUserAgence
+    {
+        return $this->compteUserAgence;
+    }
+
+    public function setCompteUserAgence(?CompteUserAgence $compteUserAgence): self
+    {
+        $this->compteUserAgence = $compteUserAgence;
 
         return $this;
     }

@@ -2,14 +2,23 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\ClientsRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ClientsRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ * normalizationContext={"groups"={"client:read"}},
+ *      denormalizationContext={"groups"={"client:write"}},
+ *       itemOperations={
+ *          "GET",
+ *          "PUT"={"deserialize"=false},
+ *          "DELETE"
+ *      }
+ * )
  * @ORM\Entity(repositoryClass=ClientsRepository::class)
  */
 class Clients
@@ -18,33 +27,71 @@ class Clients
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({
+     *    "client:read","trans:read", "trans:write"
+     * })
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({
+     *      "client:read", "client:write",
+     *      "trans:read", "trans:write"
+     * })
      */
     private $nomComplet;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({
+     *      "client:read", "client:write",
+     *      "trans:read", "trans:write"
+     * })
      */
     private $telephone;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $num_cni;
-
-    /**
      * @ORM\Column(type="boolean")
      */
-    private $statut;
+    private $statut= false;
+
 
     /**
-     * @ORM\OneToMany(targetEntity=Transaction::class, mappedBy="clients")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({
+     *      "client:read", "client:write",
+     *      "trans:read", "trans:write"
+     * })
      */
-    private $transactions;
+    private $cniBeneficiaire;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({
+     *      "client:read", "client:write",
+     *      "trans:read", "trans:write"
+     * })
+     */
+    private $telephoneBeneficiaire;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({
+     *      "client:read", "client:write",
+     *      "trans:read", "trans:write"
+     * })
+     */
+    private $nomCompletBeneficiaire;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({
+     *      "client:read", "client:write",
+     *      "trans:read", "trans:write"
+     * })
+     */
+    private $numCNI;
 
     public function __construct()
     {
@@ -80,18 +127,6 @@ class Clients
         return $this;
     }
 
-    public function getNumCni(): ?int
-    {
-        return $this->num_cni;
-    }
-
-    public function setNumCni(int $num_cni): self
-    {
-        $this->num_cni = $num_cni;
-
-        return $this;
-    }
-
     public function getStatut(): ?bool
     {
         return $this->statut;
@@ -104,33 +139,53 @@ class Clients
         return $this;
     }
 
-    /**
-     * @return Collection|Transaction[]
-     */
-    public function getTransactions(): Collection
+
+    public function getCniBeneficiaire(): ?string
     {
-        return $this->transactions;
+        return $this->cniBeneficiaire;
     }
 
-    public function addTransaction(Transaction $transaction): self
+    public function setCniBeneficiaire(string $cniBeneficiaire): self
     {
-        if (!$this->transactions->contains($transaction)) {
-            $this->transactions[] = $transaction;
-            $transaction->setClients($this);
-        }
+        $this->cniBeneficiaire = $cniBeneficiaire;
 
         return $this;
     }
 
-    public function removeTransaction(Transaction $transaction): self
+    public function getTelephoneBeneficiaire(): ?string
     {
-        if ($this->transactions->removeElement($transaction)) {
-            // set the owning side to null (unless already changed)
-            if ($transaction->getClients() === $this) {
-                $transaction->setClients(null);
-            }
-        }
+        return $this->telephoneBeneficiaire;
+    }
+
+    public function setTelephoneBeneficiaire(string $telephoneBeneficiaire): self
+    {
+        $this->telephoneBeneficiaire = $telephoneBeneficiaire;
 
         return $this;
     }
+
+    public function getNomCompletBeneficiaire(): ?string
+    {
+        return $this->nomCompletBeneficiaire;
+    }
+
+    public function setNomCompletBeneficiaire(string $nomCompletBeneficiaire): self
+    {
+        $this->nomCompletBeneficiaire = $nomCompletBeneficiaire;
+
+        return $this;
+    }
+
+    public function getNumCNI(): ?string
+    {
+        return $this->numCNI;
+    }
+
+    public function setNumCNI(string $numCNI): self
+    {
+        $this->numCNI = $numCNI;
+
+        return $this;
+    }
+
 }

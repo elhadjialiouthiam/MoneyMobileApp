@@ -18,30 +18,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity("email")
  * @ApiResource(
- * collectionOperations={
- *         "show_users"={
- *                  "method"="GET",
- *                  "access_control"="(is_granted('ROLE_ADMINSYSTEME'))"
- *          },
- *          "add_caisier"={
- *                  "method"="POST",
- *                  "access_control"="(is_granted('ROLE_ADMINSYSTEME'))"
- *          },
- * },
- * itemOperations={
- *          "show_caisier_byId"={
- *                  "method"="GET",
- *                  "access_control"="(is_granted('ROLE_ADMINSYSTEME'))"
- *          },
- *          "edit_caisier"={
- *                  "method"="PUT",
- *                  "access_control"="(is_granted('ROLE_ADMINSYSTEME'))"
- *          },
- *          "delete"={
- *               "security"="is_granted('ROLE_ADMINSYSTEME')", 
- *              "security_message"="seul les admins peuvent supprimer un utilusateur."
- *          },
- * }
+ *       itemOperations={
+ *          "GET",
+ *          "PUT"={"deserialize"=false},
+ *          "DELETE"
+ *      }
  * )
  * @ApiFilter(
  * BooleanFilter::class, properties={"statut"}

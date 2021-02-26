@@ -2,12 +2,21 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\AdminAgenceRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AdminAgenceRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *      normalizationContext={"groups"={"user:read"}},
+ *      denormalizationContext={"groups"={"user:write"}},
+ *       itemOperations={
+ *          "GET",
+ *          "PUT"={"deserialize"=false},
+ *          "DELETE"
+ *      }
+ * )
  * @ORM\Entity(repositoryClass=AdminAgenceRepository::class)
  */
 class AdminAgence extends User
@@ -16,11 +25,18 @@ class AdminAgence extends User
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({
+     *      "user:read", "profil:read",
+     *      "agence:read", "agence:write",
+     * })
      */
     protected $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Agences::class, inversedBy="adminAgences")
+     * @Groups({
+     *      "user:read", "profil:read",
+     * })
      */
     private $agence;
 
