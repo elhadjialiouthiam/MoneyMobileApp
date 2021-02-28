@@ -11,16 +11,13 @@ class ComptesDataPersister implements ContextAwareDataPersisterInterface
 {
     private $_entityManager;
     private $_utilsHelper;
-    private $_passwordEncoder;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         UtilsHelper $utilsHelper,
-        UserPasswordEncoderInterface $passwordEncoder
     ) {
         $this->_entityManager = $entityManager;
         $this->_utilsHelper = $utilsHelper;
-        $this->_passwordEncoder = $passwordEncoder;
     }
 
     public function supports($data, array $context = []): bool
@@ -31,7 +28,9 @@ class ComptesDataPersister implements ContextAwareDataPersisterInterface
 
     public function persist($data, array $context = [])
     {
-        $data->setNumeroCompte($this->_utilsHelper->generateCode());
+        $soldeCompte = $data->getCompte()->getSolde();
+        $data->getCompte()->setSolde($soldeCompte + 700000);
+        $data->setNumCompte($this->_utilsHelper->generateCode());
         // call your persistence layer to save $data
         $this->_entityManager->persist($data);
         $this->_entityManager->flush();

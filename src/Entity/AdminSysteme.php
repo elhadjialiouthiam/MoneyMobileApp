@@ -7,7 +7,12 @@ use App\Repository\AdminSystemeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *      attributes={
+ *      "security" = "is_granted('ROLE_ADMINSYSTEME')",
+ *      "security_message" = "tu n'as pas le droit d'acces à ce ressource",
+ *   },
+ * )
  * @ORM\Entity(repositoryClass=AdminSystemeRepository::class)
  */
 class AdminSysteme extends User

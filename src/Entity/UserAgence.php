@@ -12,8 +12,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- * normalizationContext={"groups"={"useragence:read"}},
+ *      normalizationContext={"groups"={"useragence:read"}},
  *      denormalizationContext={"groups"={"useragence:write"}},
+ *      attributes={
+ *      "security" = "is_granted('ROLE_ADMINSYSTEME') or is_granted('ROLE_CAISIER') or is_granted('ROLE_ADMINAGENCE')",
+ *      "security_message" = "tu n'as pas le droit d'acces à ce ressource",
+ *   },
  *       itemOperations={
  *          "GET",
  *          "PUT"={"deserialize"=false},
@@ -70,7 +74,6 @@ class UserAgence
      *      "useragence:read", "useragence:write",
      *      "trans:read",
      * })
-     * @ApiSubresource
      */
     private $compteUserAgence;
 

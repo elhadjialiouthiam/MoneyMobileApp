@@ -9,13 +9,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- *      normalizationContext={"groups"={"user:read"}},
- *      denormalizationContext={"groups"={"user:write"}},
- *       itemOperations={
- *          "GET",
- *          "PUT"={"deserialize"=false},
- *          "DELETE"
- *      }
+ *      attributes={
+ *      "security" = "is_granted('ROLE_ADMINSYSTEME')",
+ *      "security_message" = "tu n'as pas le droit d'acces à ce ressource",
+ *   },
  * )
  * @ORM\Entity(repositoryClass=AdminAgenceRepository::class)
  */
@@ -26,7 +23,6 @@ class AdminAgence extends User
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups({
-     *      "user:read", "profil:read",
      *      "agence:read", "agence:write",
      * })
      */

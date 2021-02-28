@@ -13,8 +13,10 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
 
     public function __construct(
         EntityManagerInterface $entityManager,
+        UserPasswordEncoderInterface $passwordEncoder,
     ) {
         $this->_entityManager = $entityManager;
+        $this->_passwordEncoder = $passwordEncoder;
     }
 
     public function supports($data, array $context = []): bool
@@ -26,6 +28,16 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     public function persist($data, array $context = [])
     {
         // call your persistence layer to save $data
+        if ($data->getPassword()) {
+            $data->setPassword(
+                $this->_passwordEncoder->encodePassword(
+                    $data,
+                    $data->getPassword()
+                )
+            );
+
+            $data->eraseCredentials();
+        }
         $this->_entityManager->persist($data);
         $this->_entityManager->flush();
         return $data;

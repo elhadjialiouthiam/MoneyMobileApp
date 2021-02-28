@@ -1,8 +1,8 @@
 <?php
 namespace App\Services;
-
 class TransactionHelper
 {
+    
     private $frais = [
         "0-5000" =>
         425,
@@ -76,4 +76,5 @@ class TransactionHelper
         return $parts;
 
     }
+    
 }

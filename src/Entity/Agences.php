@@ -2,16 +2,21 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\AgencesRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AgencesRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- * normalizationContext={"groups"={"agence:read"}},
+ *      normalizationContext={"groups"={"agence:read"}},
  *      denormalizationContext={"groups"={"agence:write"}},
+ *      attributes={
+ *      "security" = "is_granted('ROLE_ADMINSYSTEME')",
+ *      "security_message" = "tu n'as pas le droit d'acces à ce ressource",
+ *   },
  *       itemOperations={
  *          "GET",
  *          "PUT"={"deserialize"=false},
@@ -26,47 +31,94 @@ class Agences
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({
+     *      "agence:read", "compte:read",
+     *      "compte:write","user:read", "user:write",
+     * })
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({
+     *      "agence:read", "agence:write",
+     *      "compte:read", "compte:write",
+     *      "user:read", "user:write",
+     * })
      */
     private $telephone;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({
+     *      "agence:read", "agence:write",
+     *      "compte:read", "compte:write",
+     *      "user:read", "user:write",
+     * })
      */
     private $adresse;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({
+     *      "agence:read", "agence:write",
+     *      "compte:read", "compte:write",
+     *      "user:read", "user:write",
+     * })
      */
     private $lattitude;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({
+     *      "agence:read", "agence:write",
+     *      "compte:read", "compte:write",
+     *      "user:read", "user:write",
+     * })
      */
     private $longitude;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"agence:read", "compte:read","user:read"})
      */
-    private $statut;
+    private $statut = false;
 
     /**
      * @ORM\OneToOne(targetEntity=Comptes::class, cascade={"persist", "remove"})
+     * @Groups({"agence:read", "agence:write","user:read"})
      */
     private $compte;
 
     /**
      * @ORM\OneToMany(targetEntity=AdminAgence::class, mappedBy="agence")
+     * @Groups({
+     *    "agence:read",
+     *     "compte:read","user:read"
+     * })
      */
     private $adminAgences;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({
+     *      "agence:read", "agence:write",
+     *      "compte:read", "compte:write",
+     *      "user:read", "user:write",
+     * })
+     */
+    private $nom;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @Groups({"agence:read", "compte:read","user:read"})
+     */
+    private $createdAt;
 
     public function __construct()
     {
         $this->adminAgences = new ArrayCollection();
+        $this->setCreatedAt(new \DateTime());
     }
 
     public function getId(): ?int
@@ -172,6 +224,30 @@ class Agences
                 $adminAgence->setAgence(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

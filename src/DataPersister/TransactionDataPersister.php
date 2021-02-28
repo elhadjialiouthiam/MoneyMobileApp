@@ -5,27 +5,28 @@ use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Transaction;
 use App\Services\TransactionHelper;
 use App\Services\UtilsHelper;
+use App\Services\SendSms;
 use Container6NLTnp5\getClientsRepositoryService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Notifier\Message\SentMessage;
 
 class TransactionDataPersister implements ContextAwareDataPersisterInterface
 {
     private $_entityManager;
-    private $_passwordEncoder;
     private $_transactionHelper;
     private $_utilsHelper;
+    private $_send_sms;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        UserPasswordEncoderInterface $passwordEncoder,
         TransactionHelper $transactionHelper,
-        UtilsHelper $utilsHelper
+        UtilsHelper $utilsHelper,
+        SendSms $send_sms,
     ) {
         $this->_entityManager = $entityManager;
-        $this->_passwordEncoder = $passwordEncoder;
         $this->_transactionHelper = $transactionHelper;
         $this->_utilsHelper = $utilsHelper;
+        $this->_send_sms = $send_sms;
 
     }
 
@@ -41,6 +42,7 @@ class TransactionDataPersister implements ContextAwareDataPersisterInterface
         $frais = $this->_transactionHelper->calculateFrais($data->getMontant());
         $data->setFrais($frais);
         $data->setCode($this->_utilsHelper->generateCode());
+
         $parts = $this->_transactionHelper->calculateCommissions($frais);
         $data->setPartEtat($parts['partEtat']);
         $data->setPartAgenceRetrait($parts['operateurRetrait']);
@@ -57,6 +59,7 @@ class TransactionDataPersister implements ContextAwareDataPersisterInterface
             $data->getCompte()->setSolde($soldeCompte + $soldeTransmis + $parts['operateurRetrait']);
             $data->getCompteUserAgence()->setSolde($soldeCompteUser - $soleTransmisUser);
         }
+        // $this->_send_sms->send();
         $this->_entityManager->persist($data);
         $this->_entityManager->flush();
         return $data;

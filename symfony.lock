@@ -286,6 +286,18 @@
             "src/Kernel.php"
         ]
     },
+    "symfony/free-mobile-notifier": {
+        "version": "5.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "5.1",
+            "ref": "448003c0471b88be050d6d6970bab5c9b78a63b8"
+        }
+    },
+    "symfony/http-client": {
+        "version": "v5.2.3"
+    },
     "symfony/http-client-contracts": {
         "version": "v2.3.1"
     },
@@ -303,6 +315,18 @@
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
+    },
+    "symfony/notifier": {
+        "version": "5.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "5.0",
+            "ref": "c31585e252b32fe0e1f30b1f256af553f4a06eb9"
+        },
+        "files": [
+            "config/packages/notifier.yaml"
+        ]
     },
     "symfony/orm-pack": {
         "version": "v2.1.0"
@@ -434,6 +458,9 @@
     },
     "twig/twig": {
         "version": "v3.3.0"
+    },
+    "twilio/sdk": {
+        "version": "6.18.0"
     },
     "webmozart/assert": {
         "version": "1.9.1"

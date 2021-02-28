@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Profil;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -10,6 +11,9 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -18,6 +22,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity("email")
  * @ApiResource(
+ *      attributes={
+ *      "security" = "is_granted('ROLE_ADMINSYSTEME')",
+ *      "security_message" = "tu n'as pas le droit d'acces à ce ressource",
+ *   },
  *       itemOperations={
  *          "GET",
  *          "PUT"={"deserialize"=false},
@@ -37,11 +45,21 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("profil:read")
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotBlank(
+     * message = "L'email ne peut pas etre vide"
+     * )
+     * @Assert\Regex(
+     * pattern="/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/",
+     * message="Email Invalide"
+     * )
+     * @Groups("profil:read")
+     * 
      */
     private $email;
 
@@ -50,26 +68,38 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Groups("profil:read")
+     * 
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message = "Le prenom ne peut pas etre vide")
+     * @Assert\Length(min = 3)
+     * @Groups("profil:read")
+     * 
      */
     private $prenom;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message = "Le nom ne peut pas etre vide")
+     * @Assert\Length(min = 3)
+     * @Groups("profil:read")
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("profil:read")
      */
     private $telephone;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("profil:read")
+     * 
      */
     private $statut= false;
 

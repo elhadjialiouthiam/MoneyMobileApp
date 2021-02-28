@@ -13,6 +13,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource(
  *      normalizationContext={"groups"={"compteuser:read"}},
  *      denormalizationContext={"groups"={"compteuser:write"}},
+ *      attributes={
+ *      "security" = "is_granted('ROLE_ADMINSYSTEME') or is_granted('ROLE_CAISIER') or is_granted('ROLE_ADMINAGENCE')",
+ *      "security_message" = "tu n'as pas le droit d'acces à ce ressource",
+ *   },
  *      itemOperations={
  *          "GET",
  *          "PUT"={"deserialize"=false},
@@ -68,7 +72,7 @@ class CompteUserAgence
      *      "compteuser:read", "compteuser:write","trans:read","useragence:read","useragence:write",
      * })
      */
-    private $numero_compte;
+    private $numCompte;
 
     public function __construct()
     {
@@ -148,15 +152,16 @@ class CompteUserAgence
         return $this;
     }
 
-    public function getNumeroCompte(): ?string
+    public function getNumCompte(): ?string
     {
-        return $this->numero_compte;
+        return $this->numCompte;
     }
 
-    public function setNumeroCompte(string $numero_compte): self
+    public function setNumCompte(string $numCompte): self
     {
-        $this->numero_compte = $numero_compte;
+        $this->numCompte = $numCompte;
 
         return $this;
     }
+
 }

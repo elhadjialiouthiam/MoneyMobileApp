@@ -28,7 +28,8 @@ class CompteUserAgenceDataPersister implements ContextAwareDataPersisterInterfac
 
     public function persist($data, array $context = [])
     {
-        $data->setNumeroCompte($this->_utilsHelper->generateCode());
+        $data->setNumCompte($this->_utilsHelper->generateCode());
+        dd($data);
         // call your persistence layer to save $data
         $this->_entityManager->persist($data);
         $this->_entityManager->flush();

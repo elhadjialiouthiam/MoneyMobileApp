@@ -13,6 +13,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource(
  *      normalizationContext={"groups"={"compte:read"}},
  *      denormalizationContext={"groups"={"compte:write"}},
+ *      attributes={
+ *      "security" = "is_granted('ROLE_ADMINSYSTEME') or is_granted('ROLE_CAISIER') or is_granted('ROLE_ADMINAGENCE')",
+ *      "security_message" = "tu n'as pas le droit d'acces à ce ressource",
+ *   },
  *      itemOperations={
  *          "GET",
  *          "PUT"={"deserialize"=false},
@@ -34,15 +38,6 @@ class Comptes
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({
-     *      "compte:read", "compte:write",
-     *      "agence:read", "agence:write",
-     * })
-     */
-    private $numero_compte;
-
-    /**
      * @ORM\Column(type="integer")
      * @Groups({
      *      "compte:read", "compte:write",
@@ -52,15 +47,6 @@ class Comptes
     private $solde;
 
     /**
-     * @ORM\Column(type="date")
-     * @Groups({
-     *      "compte:read", "compte:write",
-     *      "agence:read", "agence:write",
-     * })
-     */
-    private $date_creation;
-
-    /**
      * @ORM\Column(type="boolean")
      * @Groups({
      *      "compte:read", 
@@ -68,8 +54,6 @@ class Comptes
      * })
      */
     private $statut= false;
-
-    private $transactions;
 
     /**
      * @ORM\ManyToOne(targetEntity=Caisier::class, inversedBy="comptes")
@@ -81,28 +65,34 @@ class Comptes
      */
     private $transaction;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     *  @Groups({
+     *      "compte:read", "compte:write",
+     *      "agence:read", "agence:write",
+     * })
+     */
+    private $numCompte;
+
+    /**
+     * @ORM\Column(type="date")
+     * @Groups({
+     *      "compte:read", "compte:write",
+     *      "agence:read", "agence:write",
+     * })
+     */
+    private $dateCreation;
+
     public function __construct()
     {
         $this->transaction = new ArrayCollection();
         $this->setDateCreation(new \DateTime());
-        $this->setSolde(700000);
+        // $this->setSolde(700000);
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getNumeroCompte(): ?string
-    {
-        return $this->numero_compte;
-    }
-
-    public function setNumeroCompte(string $numero_compte): self
-    {
-        $this->numero_compte = $numero_compte;
-
-        return $this;
     }
 
     public function getSolde(): ?int
@@ -113,18 +103,6 @@ class Comptes
     public function setSolde(int $solde): self
     {
         $this->solde = $solde;
-
-        return $this;
-    }
-
-    public function getDateCreation(): ?\DateTimeInterface
-    {
-        return $this->date_creation;
-    }
-
-    public function setDateCreation(\DateTimeInterface $date_creation): self
-    {
-        $this->date_creation = $date_creation;
 
         return $this;
     }
@@ -189,5 +167,29 @@ class Comptes
     public function getTransaction(): Collection
     {
         return $this->transaction;
+    }
+
+    public function getNumCompte(): ?string
+    {
+        return $this->numCompte;
+    }
+
+    public function setNumCompte(string $numCompte): self
+    {
+        $this->numCompte = $numCompte;
+
+        return $this;
+    }
+
+    public function getDateCreation(): ?\DateTimeInterface
+    {
+        return $this->dateCreation;
+    }
+
+    public function setDateCreation(\DateTimeInterface $dateCreation): self
+    {
+        $this->dateCreation = $dateCreation;
+
+        return $this;
     }
 }

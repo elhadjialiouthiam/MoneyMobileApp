@@ -12,17 +12,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
+ * @ApiFilter( BooleanFilter::class, properties={"isDepot"}
+ * )
  * @ApiResource(
  *      normalizationContext={"groups"={"trans:read"}},
  *      denormalizationContext={"groups"={"trans:write"}},
+ *      attributes={
+ *      "security" = "is_granted('ROLE_ADMINSYSTEME') or is_granted('ROLE_CAISIER') or is_granted('ROLE_ADMINAGENCE')",
+ *      "security_message" = "tu n'as pas le droit d'acces à ce ressource",
+ *   },
  *      itemOperations={
  *          "GET",
  *          "PUT"={"deserialize"=false},
  *          "DELETE"
  *      }
- * )
- * @ApiFilter(
- * BooleanFilter::class, properties={"isDepot"}
  * )
  * @ORM\Entity(repositoryClass=TransactionRepository::class)
  */

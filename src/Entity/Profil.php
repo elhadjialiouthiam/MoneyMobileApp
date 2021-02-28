@@ -2,14 +2,29 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\ProfilRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ProfilRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *      normalizationContext={"groups"={"profil:read"}},
+ *      denormalizationContext={"groups"={"profil:write"}},
+ *      attributes={
+ *      "security" = "is_granted('ROLE_ADMINSYSTEME')",
+ *      "security_message" = "tu n'as pas le droit d'acces à ce ressource",
+ *   },
+ *       itemOperations={
+ *          "GET",
+ *          "PUT"={"deserialize"=false},
+ *          "DELETE"
+ *      }
+ * )
  * @ORM\Entity(repositoryClass=ProfilRepository::class)
  */
 class Profil
@@ -18,21 +33,26 @@ class Profil
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"profil:read", "user:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message = "Le libelle ne peut pas etre vide")
+     * @Groups({"profil:read", "profil:write", "user:read"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"profil:read", "user:read"})
      */
     private $statut= false;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="profil")
+     * @Groups({"profil:read"})
      */
     private $users;
 
