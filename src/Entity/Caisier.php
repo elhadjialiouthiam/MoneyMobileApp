@@ -26,14 +26,8 @@ class Caisier extends User
      */
     protected $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Comptes::class, mappedBy="caisier")
-     */
-    private $comptes;
-
     public function __construct()
     {
-        $this->comptes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -41,33 +35,5 @@ class Caisier extends User
         return $this->id;
     }
 
-    /**
-     * @return Collection|Comptes[]
-     */
-    public function getComptes(): Collection
-    {
-        return $this->comptes;
-    }
-
-    public function addCompte(Comptes $compte): self
-    {
-        if (!$this->comptes->contains($compte)) {
-            $this->comptes[] = $compte;
-            $compte->setCaisier($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCompte(Comptes $compte): self
-    {
-        if ($this->comptes->removeElement($compte)) {
-            // set the owning side to null (unless already changed)
-            if ($compte->getCaisier() === $this) {
-                $compte->setCaisier(null);
-            }
-        }
-
-        return $this;
-    }
+   
 }

@@ -56,11 +56,6 @@ class Comptes
     private $statut= false;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Caisier::class, inversedBy="comptes")
-     */
-    private $caisier;
-
-    /**
      * @ORM\OneToMany(targetEntity=Transaction::class, mappedBy="comptes")
      */
     private $transaction;
@@ -149,17 +144,7 @@ class Comptes
         return $this;
     }
 
-    public function getCaisier(): ?Caisier
-    {
-        return $this->caisier;
-    }
 
-    public function setCaisier(?Caisier $caisier): self
-    {
-        $this->caisier = $caisier;
-
-        return $this;
-    }
 
     /**
      * @return Collection|Transaction[]
