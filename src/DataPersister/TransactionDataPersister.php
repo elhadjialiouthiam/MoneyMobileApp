@@ -40,24 +40,49 @@ class TransactionDataPersister implements ContextAwareDataPersisterInterface
     {
         // call your persistence layer to save $data
         $frais = $this->_transactionHelper->calculateFrais($data->getMontant());
-        $data->setFrais($frais);
         $data->setCode($this->_utilsHelper->generateCode());
-
-        $parts = $this->_transactionHelper->calculateCommissions($frais);
-        $data->setPartEtat($parts['partEtat']);
-        $data->setPartAgenceRetrait($parts['operateurRetrait']);
-        $data->setPartAgenceDepot($parts['operateurDepot']);
-
-        $soldeCompte = $data->getCompte()->getSolde();
-        $soldeTransmis = $data->getMontant() - $frais;
-        $soldeCompteUser= $data->getCompteUserAgence()->getSolde();
-        $soleTransmisUser= $data->getMontant() + $frais ;
+        
         if ($data->getIsDepot()) {
+            if ($data->getIsClient()){
+                $data->setFrais($frais);
+                $parts = $this->_transactionHelper->calculateCommissions($frais);
+                $data->setPartEtat($parts['partEtat']);
+                $data->setPartSysteme($parts['partSysteme']);
+                $data->setPartAgenceDepot($parts['operateurDepot']);
+                $soldeCompte = $data->getCompte()->getSolde();
+                $soldeTransmis = $data->getMontant() - $frais;
             $data->getCompte()->setSolde($soldeCompte - $soldeTransmis + $parts['operateurDepot']);
+            }else{
+                $data->setFrais($frais);
+                $parts = $this->_transactionHelper->calculateCommissions($frais);
+                $soldeCompte = $data->getCompte()->getSolde();
+                $soldeTransmis = $data->getMontant() ;
+                $soleTransmisUser= $data->getMontant() ;
+            $soldeCompteUser= $data->getCompteUserAgence()->getSolde();
+            $data->getCompte()->setSolde($soldeCompte - $soldeTransmis);
             $data->getCompteUserAgence()->setSolde($soldeCompteUser + $data->getMontant());
+            }
         } else {
+            if ($data->getIsClient()){
+                $data->setFrais($frais);
+            $parts = $this->_transactionHelper->calculateCommissions($frais);
+            $data->setPartAgenceRetrait($parts['operateurRetrait']);
+            $soldeCompte = $data->getCompte()->getSolde();
+            $soldeTransmis = $data->getMontant();
+            $data->getCompte()->setSolde($soldeCompte + $soldeTransmis + $parts['operateurRetrait']);
+            }else{
+                $data->setFrais($frais);
+            $parts = $this->_transactionHelper->calculateCommissions($frais);
+            $data->setPartEtat($parts['partEtat']);
+            $data->setPartSysteme($parts['partSysteme']);
+            $data->setPartAgenceRetrait($parts['operateurRetrait']);
+            $soldeCompte = $data->getCompte()->getSolde();
+            $soldeTransmis = $data->getMontant() ;
+            $soleTransmisUser= $data->getMontant() + $frais ;
+            $soldeCompteUser= $data->getCompteUserAgence()->getSolde();
             $data->getCompte()->setSolde($soldeCompte + $soldeTransmis + $parts['operateurRetrait']);
             $data->getCompteUserAgence()->setSolde($soldeCompteUser - $soleTransmisUser);
+            }
         }
         // $this->_send_sms->send();
         $this->_entityManager->persist($data);

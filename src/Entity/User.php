@@ -91,7 +91,7 @@ class User implements UserInterface
     private $nom;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      * @Groups("profil:read")
      */
     private $telephone;
@@ -132,7 +132,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string) $this->telephone;
     }
 
     /**

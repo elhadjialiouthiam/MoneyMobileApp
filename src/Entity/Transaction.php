@@ -71,7 +71,6 @@ class Transaction
 
     /**
      * @ORM\Column(type="boolean")
-     *
      * @Groups({
      *      "trans:read", "trans:write","compte:read","compteuser:read","useragence:read",
      * })
@@ -88,7 +87,7 @@ class Transaction
     private $partEtat;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      *
      * @Groups({
      *      "trans:read", "trans:write",
@@ -148,6 +147,22 @@ class Transaction
      * })
      */
     private $compteUserAgence;
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @Groups({
+     *      "trans:read", "trans:write","compte:read","compteuser:read","useragence:read",
+     * })
+     */
+    private $isClient;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({
+     *      "trans:read", "trans:write",
+     * })
+     */
+    private $partSysteme;
 
     public function __construct()
     {
@@ -312,6 +327,30 @@ class Transaction
     public function setCompteUserAgence(?CompteUserAgence $compteUserAgence): self
     {
         $this->compteUserAgence = $compteUserAgence;
+
+        return $this;
+    }
+
+    public function getIsClient(): ?bool
+    {
+        return $this->isClient;
+    }
+
+    public function setIsClient(bool $isClient): self
+    {
+        $this->isClient = $isClient;
+
+        return $this;
+    }
+
+    public function getPartSysteme(): ?int
+    {
+        return $this->partSysteme;
+    }
+
+    public function setPartSysteme(int $partSysteme): self
+    {
+        $this->partSysteme = $partSysteme;
 
         return $this;
     }
